@@ -1,5 +1,5 @@
 using MultiTenancy;
 
-var app = StartUp.InitializeApp(args);
+var app = StartUp.InitializeApplication(args);
 
 app.Run();
