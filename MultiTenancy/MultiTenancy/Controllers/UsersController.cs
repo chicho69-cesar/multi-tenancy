@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
 using MultiTenancy.Models;
 using MultiTenancy.Services;
 using System.Security.Claims;
@@ -52,6 +53,34 @@ namespace MultiTenancy.Controllers {
 
                 return View(model);
             }
+        }
+
+        [HttpGet]
+        public IActionResult Login() {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model) {
+            if (!ModelState.IsValid) {
+                ModelState.AddModelError(string.Empty, "Los datos que proporcionaste no son correctos escribelos de nuevo");
+                return View(model);
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+            if (result.Succeeded) {
+                return RedirectToAction("Index", "Home");
+            } else {
+                ModelState.AddModelError(string.Empty, "Nombre de usuario o password incorrectos");
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout() {
+            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+            return RedirectToAction("Index", "Home");
         }
     }
 }

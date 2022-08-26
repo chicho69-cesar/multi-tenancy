@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MultiTenancy.Data;
+using MultiTenancy.Services;
+using MultiTenancy.Services.Interfaces;
 
 namespace MultiTenancy {
     public class StartUp {
@@ -22,11 +24,14 @@ namespace MultiTenancy {
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => 
-                options.SignIn.RequireConfirmedAccount = true
+                options.SignIn.RequireConfirmedAccount = false
             )
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddTransient<ITenantService, TenantService>();
         }
 
         private static void ConfigureMiddlewares(WebApplication app) {
