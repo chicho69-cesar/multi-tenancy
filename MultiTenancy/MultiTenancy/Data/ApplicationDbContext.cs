@@ -34,6 +34,12 @@ namespace MultiTenancy.Data {
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
 
+            builder.Entity<Country>().HasData(new Country[] {
+                new Country { Id = 1, Name = "México" },
+                new Country { Id = 2, Name = "Colombia" },
+                new Country { Id = 3, Name = "Estados Unidos" }
+            });
+
             foreach (var entitie in builder.Model.GetEntityTypes()) {
                 var type = entitie.ClrType;
 
