@@ -34,6 +34,13 @@ namespace MultiTenancy.Data {
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
 
+            builder.Entity<EnterpriseUserPermission>()
+                .HasKey(e => new {
+                    e.EnterpriseId,
+                    e.UserId,
+                    e.Permission
+                });
+
             builder.Entity<Country>().HasData(new Country[] {
                 new Country { Id = 1, Name = "México" },
                 new Country { Id = 2, Name = "Colombia" },
@@ -72,5 +79,8 @@ namespace MultiTenancy.Data {
 
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Country> Countries => Set<Country>();
+        public DbSet<Enterprise> Enterprises => Set<Enterprise>();
+        public DbSet<EnterpriseUserPermission> EnterpriseUserPermissions => Set<EnterpriseUserPermission>();
+        public DbSet<Vinculation> Vinculations => Set<Vinculation>();
     }
 }

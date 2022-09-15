@@ -32,6 +32,7 @@ namespace MultiTenancy {
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddTransient<ITenantService, TenantService>();
+            builder.Services.AddScoped<IChangeTenantService, ChangeTenantService>();
         }
 
         private static void ConfigureMiddlewares(WebApplication app) {
