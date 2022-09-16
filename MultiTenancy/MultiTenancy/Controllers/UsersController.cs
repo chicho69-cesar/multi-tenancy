@@ -4,18 +4,27 @@ using Microsoft.AspNetCore.Authentication;
 using MultiTenancy.Models;
 using MultiTenancy.Services;
 using System.Security.Claims;
+using MultiTenancy.Data;
+using MultiTenancy.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace MultiTenancy.Controllers {
     public class UsersController : Controller {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ApplicationDbContext _context;
+        private readonly IChangeTenantService _changeTenantService;
 
         public UsersController(
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager
+            SignInManager<IdentityUser> signInManager,
+            ApplicationDbContext context,
+            IChangeTenantService changeTenantService
         ) {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
+            _changeTenantService = changeTenantService;
         }
 
         [HttpGet]
@@ -36,12 +45,6 @@ namespace MultiTenancy.Controllers {
             };
 
             var result = await _userManager.CreateAsync(user, password: model.Password);
-
-            var personalitiesClaims = new List<Claim>() {
-                new Claim(Constants.ClaimTenantId, user.Id)
-            };
-
-            await _userManager.AddClaimsAsync(user, personalitiesClaims);
 
             if (result.Succeeded) {
                 await _signInManager.SignInAsync(user, isPersistent: true);
@@ -70,7 +73,23 @@ namespace MultiTenancy.Controllers {
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
             if (result.Succeeded) {
-                return RedirectToAction("Index", "Home");
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                
+                var enterprisesVinculate = await _context.EnterpriseUserPermissions
+                    .Where(eup => eup.UserId == user.Id && eup.Permission == Entities.Permissions.Null)
+                    .OrderBy(eup => eup.EnterpriseId)
+                    .Take(2)
+                    .Select(eup => eup.EnterpriseId)
+                    .ToListAsync();
+
+                if (enterprisesVinculate.Count == 0) {
+                    return RedirectToAction("Index", "Home");
+                } else if (enterprisesVinculate.Count == 1) {
+                    await _changeTenantService.ReplaceTenant(enterprisesVinculate[0], user.Id);
+                    return RedirectToAction("Index", "Home");
+                } else {
+                    return RedirectToAction("Change", "Enterprises");
+                }
             } else {
                 ModelState.AddModelError(string.Empty, "Nombre de usuario o password incorrectos");
                 return View(model);

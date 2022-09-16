@@ -28,11 +28,16 @@ namespace MultiTenancy {
             )
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            builder.Services.ConfigureApplicationCookie(options => {
+                options.LoginPath = new PathString("/users/login");
+            });
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddTransient<ITenantService, TenantService>();
             builder.Services.AddScoped<IChangeTenantService, ChangeTenantService>();
+            builder.Services.AddTransient<IUserService, UserService>();
         }
 
         private static void ConfigureMiddlewares(WebApplication app) {
