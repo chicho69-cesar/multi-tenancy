@@ -27,7 +27,7 @@ namespace MultiTenancy.Controllers {
         public IActionResult Create() {
             return View();
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> Create(CreateEnterpriseViewModel model) {
             if (!ModelState.IsValid) {
