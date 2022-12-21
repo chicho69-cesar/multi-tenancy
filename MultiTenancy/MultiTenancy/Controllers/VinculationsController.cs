@@ -83,7 +83,37 @@ namespace MultiTenancy.Controllers {
             return View(model);
         }
 
-        // TODO: Aqui voy
+        [HttpPost]
+        public async Task<IActionResult> Vinculate(VinculateUserViewModel model) {
+            if (!ModelState.IsValid) {
+                return View(model);
+            }
+
+            var userToVinculate = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == model.UserEmail);
+
+            if (userToVinculate == null) {
+                ModelState.AddModelError(nameof(model.UserEmail), "No existe un usuario con este Email");
+                return View(model);
+            }
+
+            var vinculation = new Vinculation {
+                EnterpriseId = model.EnterpriseId,
+                UserId = userToVinculate.Id,
+                Status = VinculationStatus.Pending,
+                CreationDate = DateTime.UtcNow
+            };
+
+            _context.Add(vinculation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(UserVinculated));
+        }
+
+        [HttpGet]
+        public IActionResult UserVinculated() {
+            return View();
+        }
 
         private async Task<IActionResult> ReturnPendingVinculations(string userId) {
             var pendingVinculations = await _context.Vinculations
