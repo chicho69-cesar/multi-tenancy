@@ -1,0 +1,30 @@
+﻿@using MultiTenancy.Entities
+@model List<Vinculation>
+
+<h1>Vinculaciones pendientes</h1>
+<h5>
+    Las siguientes empresas te han invitado para que colabores: 
+</h5>
+
+<ul>
+    @foreach (var vinculation in Model) {
+        <form asp-action="Index">
+            <li>
+                <input type="hidden" name="enterpriseId" value="@vinculation.EnterpriseId"/>
+
+                <div>
+                    La empresa 
+                    <span class="font-weight-bold">
+                        @vinculation.Enterprise.Name 
+                    </span>
+                    te invito a vincularte.
+                </div>
+
+                <div>
+                    <button type="submit" asp-route-vinculationStatus="@VinculationStatus.Accept" class="btn btn-primary">Aceptar</button>
+                    <button type="submit" asp-route-vinculationStatus="@VinculationStatus.Rejected" class="btn btn-danger">Rechazar</button>
+                </div>
+            </li>
+        </form>
+    }
+</ul>
