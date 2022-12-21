@@ -5,8 +5,8 @@ namespace MultiTenancy.Services {
     public class UserService : IUserService {
         private readonly HttpContext _httpContext;
         
-        public UserService(HttpContextAccessor httpContextAccessor) {
-            _httpContext = httpContextAccessor.HttpContext!;
+        public UserService(IHttpContextAccessor httpContextAccessor) {
+            _httpContext = httpContextAccessor.HttpContext;
         }
 
         public string GetUserId() {

@@ -12,7 +12,9 @@
         <div class="list-group">
             @foreach (var enterprise in Model) {
                 <button type="submit" asp-route-id="@enterprise.Id"
-                class="list-group-item list-group-item-action"></button>
+                class="list-group-item list-group-item-action">
+                    @enterprise.Name
+                </button>
             }
         </div>
     </form>
