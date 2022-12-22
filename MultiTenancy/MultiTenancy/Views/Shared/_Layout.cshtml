@@ -1,10 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Authorization;
+@using MultiTenancy.Security;
+@using MultiTenancy.Entities;
+@inject IAuthorizationService _authorizationSevice;
+
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>@ViewData["Title"]</title>
+    <title>MultiTenancy</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -30,10 +35,6 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-
-                        <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Enterprises" asp-action="Create">Crear Empresa</a>
                         </li>
 
@@ -45,9 +46,17 @@
                             <a class="nav-link text-white" asp-controller="Vinculations" asp-action="Index">Vinculaciones pendientes</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Vinculations" asp-action="Vinculate">Vincular usuarios</a>
-                        </li>
+                        @if (await _authorizationSevice.HavePermission(User, Permissions.User_Vinculate)) {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Vinculations" asp-action="Vinculate">Vincular usuarios</a>
+                            </li>
+                        }
+
+                        @if (await _authorizationSevice.HavePermission(User, Permissions.Permissions_Read)) {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Permissions" asp-action="Index">Administrar permisos</a>
+                            </li>
+                        }
                     </ul>
 
                     <partial name="_LoginPartial" />
