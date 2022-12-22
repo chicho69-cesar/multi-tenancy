@@ -7,6 +7,6 @@ namespace MultiTenancy.Entities {
         public string Name { get; set; }
         public string UserCreationId { get; set; }
         public IdentityUser UserCreation { get; set; }
-        public List<EnterpriseUserPermission> enterpriseUserPermissions { get; set; }
+        public List<EnterpriseUserPermission> EnterpriseUserPermissions { get; set; }
     }
 }
