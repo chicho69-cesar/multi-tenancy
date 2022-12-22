@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MultiTenancy.Data;
 using MultiTenancy.Entities;
 using MultiTenancy.Models;
+using MultiTenancy.Security;
 using System.Diagnostics;
 
 namespace MultiTenancy.Controllers {
@@ -22,14 +23,10 @@ namespace MultiTenancy.Controllers {
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(string name) {
-            var product = new Product {
-                Name = name
-            };
-
+        [HavePermission(Permissions.Products_Create)]
+        public async Task<IActionResult> Index(Product product) {
             await _context.AddAsync(product);
             await _context.SaveChangesAsync();
-
             var model = await BuildModelHomeIndex();
             return View(model);
         }
