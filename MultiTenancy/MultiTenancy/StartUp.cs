@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MultiTenancy.Data;
+using MultiTenancy.Security;
 using MultiTenancy.Services;
 using MultiTenancy.Services.Interfaces;
 
@@ -36,8 +38,10 @@ namespace MultiTenancy {
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddTransient<ITenantService, TenantService>();
-            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddScoped<IChangeTenantService, ChangeTenantService>();
+            builder.Services.AddScoped<IAuthorizationHandler, HavePermissionHandler>();
+            builder.Services.AddSingleton<IAuthorizationPolicyProvider, HavePermissionPolicyProvider>();
         }
 
         private static void ConfigureMiddlewares(WebApplication app) {
